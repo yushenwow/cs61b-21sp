@@ -5,13 +5,14 @@ import java.io.Serializable;
 import static capers.Utils.*;
 
 /** Represents a dog that can be serialized.
- * @author TODO
+ * @author yushen
 */
-public class Dog { // TODO
+public class Dog implements Serializable { // TODO
 
     /** Folder that dogs live in. */
-    static final File DOG_FOLDER = null; // TODO (hint: look at the `join`
-                                         //      function in Utils)
+    // TODO (hint: look at the `join` in Utils)
+    static final File CWD = new File(System.getProperty("user.dir"));
+    static final File DOG_FOLDER = new File(join(CWD, ".capers"), "dogs");
 
     /** Age of dog. */
     private int age;
@@ -40,7 +41,14 @@ public class Dog { // TODO
      */
     public static Dog fromFile(String name) {
         // TODO (hint: look at the Utils file)
-        return null;
+        File dogfile = new File(DOG_FOLDER, name);
+        Dog dog = null;
+        if (dogfile.exists()) {
+            dog = Utils.readObject(dogfile, Dog.class);
+        } else {
+            System.out.println("The dog does not exist!");
+        }
+        return dog;
     }
 
     /**
@@ -57,6 +65,21 @@ public class Dog { // TODO
      */
     public void saveDog() {
         // TODO (hint: don't forget dog names are unique)
+        if (!DOG_FOLDER.exists()) {
+            DOG_FOLDER.mkdir();
+        }
+
+        String[] filenames = DOG_FOLDER.list();
+        if (filenames != null) {
+            for (String filename : filenames) {
+                if (filename.equals(this.name)) {
+                    System.out.println("This name is already in use!");
+                    return;
+                }
+            }
+        }
+        File dogfile = new File(DOG_FOLDER, this.name);
+        Utils.writeObject(dogfile, this);   //Use an instance instead of a class when using writeObject()
     }
 
     @Override
@@ -65,5 +88,4 @@ public class Dog { // TODO
             "Woof! My name is %s and I am a %s! I am %d years old! Woof!",
             name, breed, age);
     }
-
 }
